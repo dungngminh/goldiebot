@@ -7,6 +7,15 @@
   - `intervalHours`: minimum interval between checks (the script may skip if it runs too soon)
   - `notifyOnFirstRun`: if `true`, send Telegram on the very first run as well
 
+## Latest Snapshot (Vàng 9999) 🪙
+
+<!--SNAPSHOT_DETAILS_START-->
+Last checked (UTC): 23/03/2026 15:32:39 UTC ⏰
+Buy: 15.900.000đ 🟢
+Sell: 16.230.000đ 🟠
+Source: https://kimkhanhviethung.vn/tra-cuu-gia-vang.html 🔗
+<!--SNAPSHOT_DETAILS_END-->
+
 ## Telegram secrets (GitHub Actions)
 
 - `TELEGRAM_BOT_TOKEN`

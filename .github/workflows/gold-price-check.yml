@@ -38,11 +38,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: dart run bin/check_gold_prices.dart --config-path config/goldbot.json
 
+      - name: Update README from snapshot
+        run: dart run bin/update_readme_snapshot.dart --snapshot-path data/last_snapshot.json --readme-path README.md
+
       - name: Commit data changes
         shell: bash
         run: |
           set -euo pipefail
-          FILES=("data/last_snapshot.json" "data/subscribers.json" "data/telegram_offset.json")
+          FILES=("data/last_snapshot.json" "data/subscribers.json" "data/telegram_offset.json" "README.md")
           if [ -z "$(git status --porcelain -- "${FILES[@]}" 2>/dev/null || true)" ]; then
             echo "No data changes."
             exit 0
