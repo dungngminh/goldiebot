@@ -10,10 +10,13 @@
 ## Latest Snapshot (Vàng 9999) 🪙
 
 <!--SNAPSHOT_DETAILS_START-->
-Last checked (UTC): Thứ Hai, 23/03/2026 15:38:29 UTC ⏰
-Buy: 15.900.000đ 🟢
-Sell: 16.230.000đ 🟠
-Source: https://kimkhanhviethung.vn/tra-cuu-gia-vang.html 🔗
+Last checked (UTC): 23/03/2026 15:32:39 UTC ⏰
+
+- **Buy:** 15.900.000đ 🟢
+
+- **Sell:** 16.230.000đ 🟠
+
+- **Source:** https://kimkhanhviethung.vn/tra-cuu-gia-vang.html 🔗
 <!--SNAPSHOT_DETAILS_END-->
 
 ## Telegram secrets (GitHub Actions)
