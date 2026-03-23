@@ -1,0 +1,52 @@
+name: Gold price check
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gold-price-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: true
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.11.0
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Check prices & notify
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: dart run bin/check_gold_prices.dart --config-path config/goldbot.json
+
+      - name: Commit snapshot changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="data/last_snapshot.json"
+          if [ -z "$(git status --porcelain -- "$FILE")" ]; then
+            echo "No snapshot changes."
+            exit 0
+          fi
+
+          git config user.name "dungngminh"
+          git config user.email "ngminhdung1311@gmail.com"
+          git add -- "$FILE"
+          git commit -m "chore: update gold price snapshot" || true
+          git push || true
