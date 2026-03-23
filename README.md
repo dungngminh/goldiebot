@@ -1,16 +1,27 @@
-A tool để tự động crawl giá vàng (mỗi giờ theo GitHub Actions), lưu snapshot và
-gửi thông báo Telegram khi có thay đổi.
+# Vibe GoldieBot
 
-## Config
+## Configuration
+
 - `config/goldbot.json`
-  - `sourceUrl`: trang crawl
-  - `intervalHours`: khoảng thời gian tối thiểu giữa các lần chạy (script có thể skip nếu chưa đủ thời gian)
-  - `notifyOnFirstRun`: nếu `true` thì lần chạy đầu cũng gửi Telegram
+  - `sourceUrl`: gold price page to crawl
+  - `intervalHours`: minimum interval between checks (the script may skip if it runs too soon)
+  - `notifyOnFirstRun`: if `true`, send Telegram on the very first run as well
 
 ## Telegram secrets (GitHub Actions)
+
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
 
-## Entry point
-- `bin/check_gold_prices.dart`
+## Subscribe via Telegram
 
+The bot processes commands on each scheduled cron run and stores the subscriber list in `data/subscribers.json`.
+
+Commands:
+
+- `/subscribe`: add your chat to the notification list
+- `/unsubscribe`: remove your chat from the notification list
+- `/start` or `/help`: show help
+
+## Entry point
+
+- `bin/check_gold_prices.dart`

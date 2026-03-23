@@ -5,6 +5,8 @@ import 'package:goldiebot/src/model/gold_snapshot.dart';
 import 'package:goldiebot/src/parse/price_parser.dart';
 import 'package:goldiebot/src/scraper/kimkhanhviethung_scraper.dart';
 import 'package:goldiebot/src/storage/snapshot_store.dart';
+import 'package:goldiebot/src/storage/subscriber_store.dart';
+import 'package:goldiebot/src/storage/telegram_offset_store.dart';
 import 'package:goldiebot/src/telegram/telegram_client.dart';
 
 Future<void> main(List<String> arguments) async {
@@ -31,10 +33,97 @@ Future<void> main(List<String> arguments) async {
   //   }
   // }
 
+  final botToken = Platform.environment['TELEGRAM_BOT_TOKEN'] ?? '';
+  final telegramClient = TelegramClient();
+
+  final subscriberStore = SubscriberStore('data/subscribers.json');
+  final offsetStore = TelegramOffsetStore('data/telegram_offset.json');
+
+  var subscribers = <int>{};
+  if (botToken.isNotEmpty) {
+    subscribers = await subscriberStore.read();
+
+    // Nếu danh sách rỗng thì seed bằng `TELEGRAM_CHAT_ID` (tuỳ chọn).
+    final envChatIdRaw = Platform.environment['TELEGRAM_CHAT_ID'];
+    if (subscribers.isEmpty &&
+        envChatIdRaw != null &&
+        envChatIdRaw.trim().isNotEmpty) {
+      subscribers = {int.parse(envChatIdRaw.trim())};
+    }
+
+    // Xử lý lệnh subscribe/unsubscribe mỗi lần job chạy.
+    final offset = await offsetStore.read();
+    final updates = await telegramClient.getUpdates(
+      botToken: botToken,
+      offset: offset,
+      limit: 50,
+    );
+
+    if (updates.isNotEmpty) {
+      var maxUpdateId = updates
+          .map((u) => u.updateId)
+          .reduce((a, b) => a > b ? a : b);
+      var subscribersChanged = false;
+
+      for (final update in updates) {
+        final text = update.text?.trim() ?? '';
+        if (text.isEmpty) continue;
+
+        // Cho phép command dạng: /subscribe@TenBot
+        final normalized = text.split('@').first.toLowerCase();
+        final chatIdStr = update.chatId.toString();
+
+        if (normalized == '/subscribe') {
+          if (subscribers.add(update.chatId)) {
+            subscribersChanged = true;
+          }
+          await telegramClient.sendMessage(
+            botToken: botToken,
+            chatId: chatIdStr,
+            text:
+                '✅ Đã subscribe giá vàng 9999. Khi có thay đổi, bot sẽ thông báo bạn.',
+          );
+        } else if (normalized == '/unsubscribe') {
+          if (subscribers.remove(update.chatId)) {
+            subscribersChanged = true;
+          }
+          await telegramClient.sendMessage(
+            botToken: botToken,
+            chatId: chatIdStr,
+            text: '🛑 Đã unsubscribe. Bạn sẽ không nhận thông báo giá nữa.',
+          );
+        } else if (normalized == '/start' || normalized == '/help') {
+          await telegramClient.sendMessage(
+            botToken: botToken,
+            chatId: chatIdStr,
+            text: [
+              '🪙 Bot báo giá vàng 9999',
+              'Các lệnh:',
+              '• /subscribe',
+              '• /unsubscribe',
+            ].join('\n'),
+          );
+        }
+
+        // Dù là lệnh gì, ta vẫn tiến offset qua updateId ở cuối vòng.
+        // (Không cần xử lý thêm logic phức tạp ở đây.)
+        if (update.updateId > maxUpdateId) {
+          maxUpdateId = update.updateId;
+        }
+      }
+
+      if (subscribersChanged) {
+        await subscriberStore.write(subscribers);
+      }
+      // Telegram yêu cầu offset = update_id + 1.
+      await offsetStore.write(maxUpdateId + 1);
+    }
+  }
+
+  // Crawl giá và so sánh thay đổi “Vàng 9999”.
   final scraper = KimKhanhVietHungScraper(config.sourceUrl);
   final rates = await scraper.fetchGoldRates();
 
-  // Chỉ quan tâm “Vàng 9999” (thực tế lấy từ dòng “Vàng 999.9”).
   final changedGold9999 = oldSnapshot == null
       ? true
       : (rates.gold9999.buy != oldSnapshot.rates.gold9999.buy ||
@@ -49,22 +138,17 @@ Future<void> main(List<String> arguments) async {
   await store.write(newSnapshot);
 
   final shouldNotify =
+      botToken.isNotEmpty &&
+      subscribers.isNotEmpty &&
       changedGold9999 &&
       (oldSnapshot != null || config.notifyOnFirstRun == true);
 
   if (!shouldNotify) {
     stdout.writeln(
       changedGold9999
-          ? 'First run baseline created. notifyOnFirstRun=false so no Telegram.'
+          ? 'First run baseline/notify not enabled or no subscribers; Telegram not sent.'
           : 'No price change; Telegram not sent.',
     );
-    return;
-  }
-
-  final botToken = Platform.environment['TELEGRAM_BOT_TOKEN'] ?? '';
-  final chatId = Platform.environment['TELEGRAM_CHAT_ID'] ?? '';
-  if (botToken.isEmpty || chatId.isEmpty) {
-    stdout.writeln('TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set. Skip send.');
     return;
   }
 
@@ -74,11 +158,14 @@ Future<void> main(List<String> arguments) async {
     changed: changedGold9999,
   );
 
-  await TelegramClient().sendMessage(
-    botToken: botToken,
-    chatId: chatId,
-    text: text,
-  );
+  final targets = subscribers.toList()..sort();
+  for (final chatId in targets) {
+    await telegramClient.sendMessage(
+      botToken: botToken,
+      chatId: chatId.toString(),
+      text: text,
+    );
+  }
 }
 
 String? _getArgValue(List<String> args, String key) {

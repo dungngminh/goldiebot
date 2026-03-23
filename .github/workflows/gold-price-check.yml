@@ -1,8 +1,11 @@
 name: Gold price check
 
 on:
+  push:
+    branches:
+      - main
   schedule:
-    - cron: "0 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -13,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  check:
+  run_gold_price_check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,18 +38,23 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: dart run bin/check_gold_prices.dart --config-path config/goldbot.json
 
-      - name: Commit snapshot changes
+      - name: Commit data changes
         shell: bash
         run: |
           set -euo pipefail
-          FILE="data/last_snapshot.json"
-          if [ -z "$(git status --porcelain -- "$FILE")" ]; then
-            echo "No snapshot changes."
+          FILES=("data/last_snapshot.json" "data/subscribers.json" "data/telegram_offset.json")
+          if [ -z "$(git status --porcelain -- "${FILES[@]}" 2>/dev/null || true)" ]; then
+            echo "No data changes."
             exit 0
           fi
 
           git config user.name "dungngminh"
           git config user.email "ngminhdung1311@gmail.com"
-          git add -- "$FILE"
-          git commit -m "chore: update gold price snapshot" || true
+          for f in "${FILES[@]}"; do
+            if [ -f "$f" ]; then
+              git add -- "$f"
+            fi
+          done
+
+          git commit -m "chore: update gold price snapshot/subscribers" || true
           git push || true
