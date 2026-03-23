@@ -1,7 +1,7 @@
 name: goldiebot
-description: A sample command-line application.
+description: Vibe GoldieBot
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/dungngminh/goldiebot
 
 environment:
   sdk: ^3.11.0
