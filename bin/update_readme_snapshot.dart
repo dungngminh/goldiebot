@@ -49,9 +49,9 @@ Future<void> main(List<String> arguments) async {
 
   final details = [
     'Last checked (UTC): ${_formatUtcVi(snapshot.checkedAtUtc.toUtc())} UTC ⏰',
-    'Buy: ${formatVnd(snapshot.rates.gold9999.buy)}đ 🟢',
-    'Sell: ${formatVnd(snapshot.rates.gold9999.sell)}đ 🟠',
-    'Source: ${snapshot.sourceUrl} 🔗',
+    '- **Buy:** ${formatVnd(snapshot.rates.gold9999.buy)}đ 🟢',
+    '- **Sell:** ${formatVnd(snapshot.rates.gold9999.sell)}đ 🟠',
+    '- **Source:** ${snapshot.sourceUrl} 🔗',
   ].join('\n');
 
   const startMarker = '<!--SNAPSHOT_DETAILS_START-->';
