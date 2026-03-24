@@ -36,7 +36,7 @@ class TelegramClient {
       final raw = await response.transform(utf8.decoder).join();
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw HttpException(
-          'Telegram request failed: ${response.statusCode} ${response.reasonPhrase}. Body=$raw',
+          'Telegram request failed: $chatId with ${response.statusCode} ${response.reasonPhrase}. Body=$raw',
         );
       }
 

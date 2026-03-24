@@ -91,7 +91,10 @@ Future<void> main(List<String> arguments) async {
             botToken: botToken,
             chatId: chatIdStr,
             text: '🛑 Đã unsubscribe. Bạn sẽ không nhận thông báo giá nữa.',
-          );
+              )
+              .onError((error, stackTrace) {
+                stdout.writeln('Error sending message: $error');
+              });
         } else if (normalized == '/start' || normalized == '/help') {
           await telegramClient.sendMessage(
             botToken: botToken,
@@ -102,7 +105,10 @@ Future<void> main(List<String> arguments) async {
               '• /subscribe',
               '• /unsubscribe',
             ].join('\n'),
-          );
+              )
+              .onError((error, stackTrace) {
+                stdout.writeln('Error sending message: $error');
+              });
         }
 
         // Dù là lệnh gì, ta vẫn tiến offset qua updateId ở cuối vòng.
