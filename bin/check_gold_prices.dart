@@ -220,9 +220,6 @@ String _buildMessage({
   final lines = <String>[
     '🪙 Giá Vàng 9999',
     '📌 $status',
-    '⏰ ${prettyUtc(newSnapshot.checkedAtUtc)}',
-    '🔗 Nguồn: ${newSnapshot.sourceUrl}',
-    '',
   ];
 
   if (previous == null) {
@@ -239,6 +236,11 @@ String _buildMessage({
       '🟠 Bán ra: ${formatVnd(current.sell)}đ(${arrowForDelta(deltaSell)} ${signedDelta(deltaSell)})',
     ]);
   }
+
+  lines.addAll([
+    '⏰ ${prettyUtc(newSnapshot.checkedAtUtc)}',
+    '🔗 Nguồn: ${newSnapshot.sourceUrl}',
+  ]);
 
   return lines.join('\n');
 }
