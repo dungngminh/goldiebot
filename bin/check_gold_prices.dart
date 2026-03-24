@@ -184,8 +184,8 @@ String _buildMessage({
   final previous = oldSnapshot?.rates.gold9999;
 
   String arrowForDelta(int delta) {
-    if (delta > 0) return '🔺';
-    if (delta < 0) return '🔻';
+    if (delta > 0) return '🔼';
+    if (delta < 0) return '🔽';
     return '➖';
   }
 
@@ -235,8 +235,8 @@ String _buildMessage({
     final deltaSell = current.sell - previous.sell;
 
     lines.addAll([
-      '🟢 Mua vào: ${formatVnd(previous.buy)}đ \n→ ${formatVnd(current.buy)}đ(${arrowForDelta(deltaBuy)} ${signedDelta(deltaBuy)})',
-      '🟠 Bán ra: ${formatVnd(previous.sell)}đ \n→ ${formatVnd(current.sell)}đ(${arrowForDelta(deltaSell)} ${signedDelta(deltaSell)})',
+      '🟢 Mua vào: ${formatVnd(current.buy)}đ(${arrowForDelta(deltaBuy)} ${signedDelta(deltaBuy)})',
+      '🟠 Bán ra: ${formatVnd(current.sell)}đ(${arrowForDelta(deltaSell)} ${signedDelta(deltaSell)})',
     ]);
   }
 
