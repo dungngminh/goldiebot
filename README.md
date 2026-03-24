@@ -1,4 +1,4 @@
-# Vibe GoldieBot
+# Vibe GoldieBot [@VangKimKhanh_bot](https://t.me/VangKimKhanh_bot)
 
 ## Latest Snapshot (Vàng 9999) 🪙
 
