@@ -236,7 +236,7 @@ String _buildMessage({
     ]);
   }
 
-  lines.addAll(
+  lines.addAll([
     '',
     '⏰ ${prettyUtc(newSnapshot.checkedAtUtc)}',
     '🔗 Nguồn: ${newSnapshot.sourceUrl}',
