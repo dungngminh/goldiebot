@@ -218,26 +218,26 @@ String _buildMessage({
       : (changed ? '🚨 Thay đổi' : '✅ Không đổi');
 
   final lines = <String>[
-    '🪙 Giá Vàng 9999',
-    '📌 $status',
+    '🪙 Giá Vàng 9999 - $status',
   ];
 
   if (previous == null) {
     lines.addAll([
-      '🟢 Mua vào: ${formatVnd(current.buy)}đ',
-      '🟠 Bán ra: ${formatVnd(current.sell)}đ',
+      '🟢 Mua: ${formatVnd(current.buy)}đ',
+      '🟠 Bán: ${formatVnd(current.sell)}đ',
     ]);
   } else {
     final deltaBuy = current.buy - previous.buy;
     final deltaSell = current.sell - previous.sell;
 
     lines.addAll([
-      '🟢 Mua vào: ${formatVnd(current.buy)}đ(${arrowForDelta(deltaBuy)} ${signedDelta(deltaBuy)})',
-      '🟠 Bán ra: ${formatVnd(current.sell)}đ(${arrowForDelta(deltaSell)} ${signedDelta(deltaSell)})',
+      '🟢 Mua: ${formatVnd(current.buy)}đ(${arrowForDelta(deltaBuy)} ${signedDelta(deltaBuy)})',
+      '🟠 Bán: ${formatVnd(current.sell)}đ(${arrowForDelta(deltaSell)} ${signedDelta(deltaSell)})',
     ]);
   }
 
-  lines.addAll([
+  lines.addAll(
+    '',
     '⏰ ${prettyUtc(newSnapshot.checkedAtUtc)}',
     '🔗 Nguồn: ${newSnapshot.sourceUrl}',
   ]);
