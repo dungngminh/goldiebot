@@ -51,8 +51,8 @@ jobs:
             exit 0
           fi
 
-          git config user.name "dungngminh"
-          git config user.email "ngminhdung1311@gmail.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           for f in "${FILES[@]}"; do
             if [ -f "$f" ]; then
               git add -- "$f"
