@@ -3,7 +3,7 @@
 ## Latest Snapshot (Vàng 9999) 🪙
 
 <!--SNAPSHOT_DETAILS_START-->
-Last checked (UTC): Thứ Năm, 05/11/2026 19:34:41 UTC ⏰
+Last checked (UTC): Thứ Sáu, 06/11/2026 00:47:41 UTC ⏰
 - **Buy:** 13.120.000đ 🟢
 - **Sell:** 13.300.000đ 🟠
 - **Source:** https://kimkhanhviethung.vn/tra-cuu-gia-vang.html 🔗
